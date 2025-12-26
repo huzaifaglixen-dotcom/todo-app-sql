@@ -12,26 +12,28 @@ const getTodos = async (req, res) => {
 
 // Create a new todo
 const createTodo = async (req, res) => {
-  const { title } = req.body;
+  const { title, completed } = req.body;
   if (!title) return res.status(400).json({ message: "Title is required" });
 
   try {
-    const todo = await Todo.createTodo(title);
+    const todo = await Todo.createTodo(title, completed);
     res.status(201).json(todo);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Update todo
+// Update todo (title and/or completed)
 const updateTodo = async (req, res) => {
   const { id } = req.params;
-  const { title } = req.body;
+  const { title, completed } = req.body;
 
-  if (!title) return res.status(400).json({ message: "Title is required" });
+  if (title === undefined && completed === undefined) {
+    return res.status(400).json({ message: "Provide title or completed status to update" });
+  }
 
   try {
-    const todo = await Todo.updateTodoTitle(id, title);
+    const todo = await Todo.updateTodo(id, title, completed);
     res.json(todo);
   } catch (err) {
     res.status(400).json({ message: err.message });
